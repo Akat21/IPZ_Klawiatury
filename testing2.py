@@ -29,9 +29,8 @@ class Menu():
         print(self.point_text.text())
 
 
-        #Getting the point of hand
-        self.point = self.point_text.text()   # tu jest punkt do lms
-        print(self.point)
+        
+       
 
 
         #button activating the launch function
@@ -48,6 +47,10 @@ class Menu():
 
 
     def launch(self):
+
+        #Getting the point of hand
+        self.point = int(self.point_text.text())   # tu jest punkt do lms
+
         pTime = 0
 
         cap = cv2.VideoCapture(0)
