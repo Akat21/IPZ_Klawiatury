@@ -3,19 +3,28 @@ import cv2
 import mediapipe as mp
 import time
 import numpy as np
-import HandTrackingModule as htm
-from Keyboard import Keyboard
-from HandMovingKeyboard import HandMovingKeyboard
-import HandMovingKeyboardStatic as static
+import Modules.HandTrackingModule as htm
+from keyboards_back.Keyboard import Keyboard
+from keyboards_back.HandMovingKeyboard import HandMovingKeyboard
+import keyboards_back.HandMovingKeyboardStatic as static
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import EightPen as ep
-import FaceMeshModuleEP as mtmep
+import trash.EightPen as ep
 from screeninfo import get_monitors
-from Feedback import Feedback
-from HeadMovingKeyboard import HeadMovingKeyboard 
+from trash.Feedback import Feedback
+from keyboards_back.HeadMovingKeyboard import HeadMovingKeyboard 
 import sys
+
+from components.RegisterViews import Views
+from components.Stylesheet import StyleSheet
+from dashboard.Dashboard import Dashboard
+from components.Navbar import Navbar
+from keyboards.Keyboards import Keyboards
+from settings.Settings import Settings
+from tutorial.Tutorial import Tutorial
+from statistic.Statistics import Statistics
+from feedback.Feedback import Feedback
 
 SCREEN_WIDTH = get_monitors()[0].width
 SCREEN_HEIGHT = get_monitors()[0].height
@@ -45,15 +54,92 @@ def generateText(file_name = 'textGenerated.csv'):
     print(chosen_row[1])
     return chosen_row
 
-class Menu(QWidget):
-
-    def __init__(self, parent = None):
+class Menu(QMainWindow):
+    def __init__(self):
         ###WINDOW INIT###
-        super(Menu, self).__init__(parent)        
+        super(Menu, self).__init__()
         self.setWindowTitle("Hand Tracking Program Menu")
         self.width = int(SCREEN_WIDTH - (SCREEN_WIDTH * 0.4))
         self.height = int(SCREEN_HEIGHT - (SCREEN_HEIGHT * 0.4))
-        self.setGeometry((SCREEN_WIDTH - self.width) / 2, ((SCREEN_HEIGHT - self.height) / 2), self.width, self.height)
+        self.setGeometry(int((SCREEN_WIDTH - self.width) / 2), (int((SCREEN_HEIGHT - self.height) / 2)), self.width, self.height)
+        #################
+
+        ####UI INIT######
+        self.UIComponents()
+        #################
+
+    def UIComponents(self):
+        self.page = QWidget()
+        self.pageLayout = QGridLayout()
+
+        navbar = Navbar(self)
+
+        self.views = Views()
+        self.views = self.ViewsRegister(self.views)
+        self.SetView(navbar, self.views)
+
+        self.page.setLayout(self.pageLayout)
+        self.setCentralWidget(self.page)
+
+################################################################################################################################
+
+    def ViewsRegister(self, view):
+        view.register("Dashboard", lambda:Dashboard())
+        view.register("Keyboards",lambda:Keyboards())
+        view.register("Feedback", lambda:Feedback())
+        view.register("Statistics",lambda:Statistics())
+        view.register("Settings", lambda:Settings())
+        view.register("Tutorial",lambda:Tutorial())
+        return view
+    
+    def SetView(self, navbar, view):
+        if navbar.page == "Dashboard":
+            currentView = view.getInstance("Dashboard")
+            [kBoard.setStyleSheet("color: black;" "font-weight: normal") for kBoard in navbar.kBoards]
+            navbar.findChild(QPushButton, "DashboardBtn").setStyleSheet("color: #720e9e;" "font-weight: bold;")
+            
+        elif navbar.page == "Keyboards":
+            currentView = view.getInstance("Keyboards")
+            [kBoard.setStyleSheet("color: black;" "font-weight: normal") for kBoard in navbar.kBoards]
+            navbar.findChild(QPushButton, "KeyboardsBtn").setStyleSheet("color: #720e9e;" "font-weight: bold;")
+
+        elif navbar.page == "Statistics":
+            currentView = view.getInstance("Statistics")
+            [kBoard.setStyleSheet("color: black;" "font-weight: normal") for kBoard in navbar.kBoards]
+            navbar.findChild(QPushButton, "StatisticsBtn").setStyleSheet("color: #720e9e;" "font-weight: bold;")
+
+        elif navbar.page == "Tutorial":
+            currentView = view.getInstance("Tutorial")
+            [kBoard.setStyleSheet("color: black;" "font-weight: normal") for kBoard in navbar.kBoards]
+            navbar.findChild(QPushButton, "TutorialsBtn").setStyleSheet("color: #720e9e;" "font-weight: bold;")
+
+        elif navbar.page == "Feedback":
+            currentView = view.getInstance("Feedback")
+            [kBoard.setStyleSheet("color: black;" "font-weight: normal") for kBoard in navbar.kBoards]
+            navbar.findChild(QPushButton, "FeedbackBtn").setStyleSheet("color: #720e9e;" "font-weight: bold;")
+
+        elif navbar.page == "Settings":
+            currentView = view.getInstance("Settings")
+            [kBoard.setStyleSheet("color: black;" "font-weight: normal") for kBoard in navbar.kBoards]
+            navbar.findChild(QPushButton, "SettingsBtn").setStyleSheet("color: #720e9e;" "font-weight: bold;")
+
+        for i in reversed(range(self.pageLayout.count())): 
+            self.pageLayout.itemAt(i).widget().setParent(None)
+
+        self.pageLayout.addWidget(navbar, 0, 0, 1, 1)
+        self.pageLayout.addWidget(currentView, 0, 1, 1, 3)
+
+
+
+class Menu1(QWidget):
+
+    def __init__(self, parent = None):
+        ###WINDOW INIT###
+        super(Menu1, self).__init__(parent)        
+        self.setWindowTitle("Hand Tracking Program Menu")
+        self.width = int(SCREEN_WIDTH - (SCREEN_WIDTH * 0.4))
+        self.height = int(SCREEN_HEIGHT - (SCREEN_HEIGHT * 0.4))
+        self.setGeometry(int((SCREEN_WIDTH - self.width) / 2), (int((SCREEN_HEIGHT - self.height) / 2)), self.width, self.height)
         self.showMaximized()
         ##################
 
@@ -570,6 +656,8 @@ class Menu(QWidget):
 
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet(StyleSheet)
+    
     menu = Menu()
     menu.show()
     sys.exit(app.exec())
