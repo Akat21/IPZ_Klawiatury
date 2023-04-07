@@ -22,11 +22,23 @@ class Keyboards(QWidget):
 
         self.setLayout(self.gridLayout)
 
+    def setHead(self):
+        return Head() \
+        .register("Eight Pen",lambda: 0) \
+        .register("Head Moving Keyboard",lambda: 0) \
+        .UIComponents()
+    
+    def setHand(self):
+        return Hand() \
+        .register("HandMovingKeyboardSection",lambda: 0) \
+        .register("HandMovingStaticKeyboardSection",lambda: 0) \
+        .register("EightPenSection",lambda: 0) \
+        .UIComponents()
 
     def ViewsRegister(self, view):
         view.register("HeadHandChoose", lambda:HeadHandChoose(self))
-        view.register("Head",lambda:Head())
-        view.register("Hand",lambda:Hand())
+        view.register("Head",self.setHead)
+        view.register("Hand",self.setHand)
         return view
 
     def SetView(self, views, viewName):

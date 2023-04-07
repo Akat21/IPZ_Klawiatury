@@ -2,38 +2,32 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from components.Navbar import Navbar
+from components.RegisterViews import Views
 
 class Hand(QWidget):
     def __init__(self, parent = None):
         super(Hand, self).__init__(parent)
         self.parent = parent
         print("Hand")
-        self.UIComponents()
+        self.keyboards = Views()
 
     def UIComponents(self):
         gridLayout = QGridLayout()
 
-        self.HandMovingKeyboardSectionBtn = QPushButton("Hand Moving Keyboard", objectName="HandMovingBtn")
-        self.HandMovingKeyboardSectionBtn.clicked.connect(self.HandMovingKeyboardSectionBtnOnClick)
-        self.HandMovingStaticKeyboardSectionBtn = QPushButton("Hand Moving Static Keyboard", objectName="HandMovingStaticBtn")
-        self.HandMovingStaticKeyboardSectionBtn.clicked.connect(self.HandMovingStaticKeyboardSectionBtnOnClick)
-        self.EightPenSectionBtn = QPushButton("EightPen", objectName="EightPenHandBtn")
-        self.EightPenSectionBtn.clicked.connect(self.EightPenSectionBtnOnClick)
-
-        gridLayout.addWidget(self.HandMovingKeyboardSectionBtn, 3, 0 , 1, 1)
-        gridLayout.addWidget(self.HandMovingStaticKeyboardSectionBtn, 3, 1 , 1, 1)
-        gridLayout.addWidget(self.EightPenSectionBtn, 3, 2 , 1, 1)
-
+        for i,keyboard in enumerate(self.keyboards.getList()):
+            keyboard=str(keyboard)
+            print(keyboard)
+            keyBoardBtn=QPushButton(keyboard, objectName="Hand"+keyboard+"Btn")
+            keyBoardBtn.clicked.connect(lambda aniki, self=self, keyboard=keyboard:self.keyBoardBtnOnClick(keyboard))
+            gridLayout.addWidget(keyBoardBtn, self.keyboards.getN(), i, 1, 1)
+        
         self.setLayout(gridLayout)
+        return self
 
-    def HandMovingKeyboardSectionBtnOnClick(self):
-        pass
-        #Tutaj podlaczyc klawiatury
-    
-    def HandMovingStaticKeyboardSectionBtnOnClick(self):
-        pass
-        #Tutaj podlaczyc klawiatury
+    def keyBoardBtnOnClick(self,keyBoardName):
+        print(keyBoardName)
+        self.keyboards.getInstance(keyBoardName)
 
-    def EightPenSectionBtnOnClick(self):
-        pass
-        #Tutaj podlaczyc klawiatury
+    def register(self, name, constructor):
+        self.keyboards.register(name, constructor)
+        return self

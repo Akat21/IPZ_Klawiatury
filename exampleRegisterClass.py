@@ -19,7 +19,7 @@ class m:
         return self.list.keys()
 
 main = m()
-main.register("k",lambda:k(1,2,3))
+main.register("k",lambda a=1,b=2,c=3:k(a,b,c))
 print("test")
 kk = main.getInstance("k")
 print("done")
